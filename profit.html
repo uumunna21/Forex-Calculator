@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profit Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Inline for quick demo, move to style.css if desired */
+    .summary-box {
+      background: #232c45;
+      border: 1.5px solid #353b50;
+      border-radius: 10px;
+      color: #a0a4b8;
+      font-size: 1rem;
+      margin-top: 18px;
+      padding: 14px 18px;
+      text-align: left;
+      width: 100%;
+      max-width: 340px;
+      box-sizing: border-box;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.07);
+    }
+    .profit-positive { color: #4fd17a !important; }
+    .profit-negative { color: #ff5c5c !important; }
+    .profit-zero { color: #a0a4b8 !important; }
+    .input-error { border: 2px solid #dc3545 !important; background: #fff0f3 !important; color: #dc3545 !important; }
+    #reset-profit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #fff;
+      color: #dc3545;
+      font-size: 1.08rem;
+      font-weight: 600;
+      border: 1.5px solid #353b50;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.07);
+      transition: background 0.2s, color 0.2s;
+    }
+    #reset-profit-btn:hover { background: #ffeaea; }
+    .navbar {
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <span class="nav-title">Forex Tools</span>
+    <a href="index.html" class="nav-btn nav-link">Home</a>
+    <a href="converter.html" class="nav-btn nav-link">Currency Converter</a>
+    <a href="profit.html" class="nav-btn nav-link">Profit Calculator</a>
+    <a href="position.html" class="nav-btn nav-link">Position Size Calculator</a>
+    <a href="pip.html" class="nav-btn nav-link">Pip Calculator</a>
+  </nav>
+  <div class="container">
+    <div class="profit-calculator">
+      <h2 class="profit-title">Profit Calculator</h2>
+      <div class="row">
+        <label for="entry-price">Entry Price</label>
+        <input type="number" id="entry-price" placeholder="Enter entry price" />
+      </div>
+      <div class="row">
+        <label for="exit-price">Exit Price</label>
+        <input type="number" id="exit-price" placeholder="Enter exit price" />
+      </div>
+      <div class="row">
+        <label for="lot-size">Lot Size</label>
+        <input type="number" id="lot-size" placeholder="Enter lot size" />
+      </div>
+      <button id="profit-btn">Calculate Profit</button>
+      <div id="profit-result"></div>
+      <button id="reset-profit-btn" type="button">Reset</button>
+      <div id="profit-summary" class="summary-box" style="display:none;"></div>
+    </div>
+  </div>
+  <script>
+    // Profit Calculator logic
+    const entryInput = document.getElementById('entry-price');
+    const exitInput = document.getElementById('exit-price');
+    const lotInput = document.getElementById('lot-size');
+    const profitBtn = document.getElementById('profit-btn');
+    const profitResult = document.getElementById('profit-result');
+    const resetBtn = document.getElementById('reset-profit-btn');
+    const summaryBox = document.getElementById('profit-summary');
+
+    function clearErrors() {
+      entryInput.classList.remove('input-error');
+      exitInput.classList.remove('input-error');
+      lotInput.classList.remove('input-error');
+    }
+
+    profitBtn.onclick = () => {
+      clearErrors();
+      const entry = parseFloat(entryInput.value);
+      const exit = parseFloat(exitInput.value);
+      const lot = parseFloat(lotInput.value);
+
+      let hasError = false;
+      if (isNaN(entry) || entry <= 0) {
+        entryInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (isNaN(exit) || exit <= 0) {
+        exitInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (isNaN(lot) || lot <= 0) {
+        lotInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (hasError) {
+        profitResult.textContent = 'Enter valid values';
+        profitResult.className = 'profit-negative';
+        summaryBox.style.display = 'none';
+        return;
+      }
+
+      const diff = exit - entry;
+      const profit = (diff * lot).toFixed(2);
+
+      // Set color
+      if (profit > 0) {
+        profitResult.textContent = `Profit: +${profit}`;
+        profitResult.className = 'profit-positive';
+      } else if (profit < 0) {
+        profitResult.textContent = `Loss: ${profit}`;
+        profitResult.className = 'profit-negative';
+      } else {
+        profitResult.textContent = `No Profit or Loss`;
+        profitResult.className = 'profit-zero';
+      }
+
+      // Show summary
+      summaryBox.innerHTML = `
+        <strong>Summary</strong><br>
+        Entry Price: <span>${entry}</span><br>
+        Exit Price: <span>${exit}</span><br>
+        Lot Size: <span>${lot}</span><br>
+        Difference: <span>${(diff).toFixed(2)}</span><br>
+        <strong>Result: <span class="${profit > 0 ? 'profit-positive' : profit < 0 ? 'profit-negative' : 'profit-zero'}">${profit}</span></strong>
+      `;
+      summaryBox.style.display = 'block';
+    };
+
+    resetBtn.onclick = () => {
+      entryInput.value = '';
+      exitInput.value = '';
+      lotInput.value = '';
+      profitResult.textContent = '';
+      profitResult.className = '';
+      summaryBox.style.display = 'none';
+      clearErrors();
+    };
+  </script>
+</body>
+</html>
+</html>

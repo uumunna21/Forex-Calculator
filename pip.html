@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pip Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .pip-summary {
+      background: #232c45;
+      border: 1.5px solid #353b50;
+      border-radius: 10px;
+      color: #a0a4b8;
+      font-size: 1rem;
+      margin-top: 18px;
+      padding: 14px 18px;
+      text-align: left;
+      width: 100%;
+      max-width: 340px;
+      box-sizing: border-box;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.07);
+      display: none;
+    }
+    .input-error { border: 2px solid #dc3545 !important; background: #fff0f3 !important; color: #dc3545 !important; }
+    #reset-pip-btn {
+      width: 100%;
+      padding: 14px;
+      background: #fff;
+      color: #dc3545;
+      font-size: 1.08rem;
+      font-weight: 600;
+      border: 1.5px solid #353b50;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.07);
+      transition: background 0.2s, color 0.2s;
+    }
+    #reset-pip-btn:hover { background: #ffeaea; }
+    .navbar {
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <span class="nav-title">Forex Tools</span>
+    <a href="index.html" class="nav-btn nav-link">Home</a>
+    <a href="converter.html" class="nav-btn nav-link">Currency Converter</a>
+    <a href="profit.html" class="nav-btn nav-link">Profit Calculator</a>
+    <a href="position.html" class="nav-btn nav-link">Position Size Calculator</a>
+    <a href="pip.html" class="nav-btn nav-link">Pip Calculator</a>
+  </nav>
+  <div class="container">
+    <div class="profit-calculator">
+      <h2 class="profit-title">Pip Calculator</h2>
+      <div class="row">
+        <label for="pip-pair">Currency Pair</label>
+        <input type="text" id="pip-pair" placeholder="e.g. EURUSD" maxlength="7" />
+      </div>
+      <div class="row">
+        <label for="pip-lot-size">Lot Size</label>
+        <input type="number" id="pip-lot-size" placeholder="e.g. 1" />
+      </div>
+      <div class="row">
+        <label for="pip-quote-currency">Quote Currency Value</label>
+        <input type="number" id="pip-quote-currency" placeholder="e.g. 1 for USD" />
+      </div>
+      <button id="pip-btn" class="big-blue-btn">Calculate Pip Value</button>
+      <div id="pip-result"></div>
+      <button id="reset-pip-btn" type="button">Reset</button>
+      <div id="pip-summary" class="pip-summary"></div>
+    </div>
+  </div>
+  <script>
+    const pipPairInput = document.getElementById('pip-pair');
+    const pipLotInput = document.getElementById('pip-lot-size');
+    const pipQuoteInput = document.getElementById('pip-quote-currency');
+    const pipBtn = document.getElementById('pip-btn');
+    const pipResult = document.getElementById('pip-result');
+    const resetBtn = document.getElementById('reset-pip-btn');
+    const summaryBox = document.getElementById('pip-summary');
+
+    function clearErrors() {
+      pipPairInput.classList.remove('input-error');
+      pipLotInput.classList.remove('input-error');
+      pipQuoteInput.classList.remove('input-error');
+    }
+
+    pipBtn.onclick = () => {
+      clearErrors();
+      const pair = pipPairInput.value.trim().toUpperCase();
+      const lot = parseFloat(pipLotInput.value);
+      const quote = parseFloat(pipQuoteInput.value);
+
+      let hasError = false;
+      if (!pair || pair.length < 6) {
+        pipPairInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (isNaN(lot) || lot <= 0) {
+        pipLotInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (isNaN(quote) || quote <= 0) {
+        pipQuoteInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (hasError) {
+        pipResult.textContent = 'Enter valid values';
+        summaryBox.style.display = 'none';
+        return;
+      }
+
+      // Standard pip calculation for most pairs (except JPY pairs)
+      let pipValue;
+      if (pair.endsWith("JPY")) {
+        pipValue = (0.01 / quote) * lot * 100000;
+      } else {
+        pipValue = (0.0001 / quote) * lot * 100000;
+      }
+
+      pipResult.textContent = `Pip Value: ${pipValue.toFixed(2)} ${pair.slice(3,6)}`;
+
+      summaryBox.innerHTML = `
+        <strong>Summary</strong><br>
+        Pair: <span>${pair}</span><br>
+        Lot Size: <span>${lot}</span><br>
+        Quote Currency Value: <span>${quote}</span><br>
+        <strong>Pip Value: <span>${pipValue.toFixed(2)} ${pair.slice(3,6)}</span></strong>
+      `;
+      summaryBox.style.display = 'block';
+    };
+
+    resetBtn.onclick = () => {
+      pipPairInput.value = '';
+      pipLotInput.value = '';
+      pipQuoteInput.value = '';
+      pipResult.textContent = '';
+      summaryBox.style.display = 'none';
+      clearErrors();
+    };
+  </script>
+</body>
+</html>
+</html>

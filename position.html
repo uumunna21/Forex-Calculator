@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Position Size Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .position-summary {
+      background: #232c45;
+      border: 1.5px solid #353b50;
+      border-radius: 10px;
+      color: #a0a4b8;
+      font-size: 1rem;
+      margin-top: 18px;
+      padding: 14px 18px;
+      text-align: left;
+      width: 100%;
+      max-width: 340px;
+      box-sizing: border-box;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.07);
+      display: none;
+    }
+    .input-error { border: 2px solid #dc3545 !important; background: #fff0f3 !important; color: #dc3545 !important; }
+    #reset-position-btn {
+      width: 100%;
+      padding: 14px;
+      background: #fff;
+      color: #dc3545;
+      font-size: 1.08rem;
+      font-weight: 600;
+      border: 1.5px solid #353b50;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.07);
+      transition: background 0.2s, color 0.2s;
+    }
+    #reset-position-btn:hover { background: #ffeaea; }
+    .navbar {
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <span class="nav-title">Forex Tools</span>
+    <a href="index.html" class="nav-btn nav-link">Home</a>
+    <a href="converter.html" class="nav-btn nav-link">Currency Converter</a>
+    <a href="profit.html" class="nav-btn nav-link">Profit Calculator</a>
+    <a href="position.html" class="nav-btn nav-link">Position Size Calculator</a>
+    <a href="pip.html" class="nav-btn nav-link">Pip Calculator</a>
+  </nav>
+  <div class="container">
+    <div class="profit-calculator">
+      <h2 class="profit-title">Position Size Calculator</h2>
+      <div class="row">
+        <label for="account-balance">Account Balance</label>
+        <input type="number" id="account-balance" placeholder="Enter account balance" />
+      </div>
+      <div class="row">
+        <label for="risk-percent">Risk % per Trade</label>
+        <input type="number" id="risk-percent" placeholder="e.g. 1 for 1%" />
+      </div>
+      <div class="row">
+        <label for="stop-loss-pips">Stop Loss (pips)</label>
+        <input type="number" id="stop-loss-pips" placeholder="Enter stop loss in pips" />
+      </div>
+      <div class="row">
+        <label for="pip-value">Pip Value</label>
+        <input type="number" id="pip-value" placeholder="e.g. 10 for USD pairs" />
+      </div>
+      <button id="position-btn" class="big-blue-btn">Calculate Position Size</button>
+      <div id="position-result"></div>
+      <button id="reset-position-btn" type="button">Reset</button>
+      <div id="position-summary" class="position-summary"></div>
+    </div>
+  </div>
+  <script>
+    const balanceInput = document.getElementById('account-balance');
+    const riskInput = document.getElementById('risk-percent');
+    const stopInput = document.getElementById('stop-loss-pips');
+    const pipValueInput = document.getElementById('pip-value');
+    const positionBtn = document.getElementById('position-btn');
+    const positionResult = document.getElementById('position-result');
+    const resetBtn = document.getElementById('reset-position-btn');
+    const summaryBox = document.getElementById('position-summary');
+
+    function clearErrors() {
+      balanceInput.classList.remove('input-error');
+      riskInput.classList.remove('input-error');
+      stopInput.classList.remove('input-error');
+      pipValueInput.classList.remove('input-error');
+    }
+
+    positionBtn.onclick = () => {
+      clearErrors();
+      const balance = parseFloat(balanceInput.value);
+      const risk = parseFloat(riskInput.value);
+      const stop = parseFloat(stopInput.value);
+      const pipValue = parseFloat(pipValueInput.value);
+
+      let hasError = false;
+      if (isNaN(balance) || balance <= 0) {
+        balanceInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (isNaN(risk) || risk <= 0) {
+        riskInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (isNaN(stop) || stop <= 0) {
+        stopInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (isNaN(pipValue) || pipValue <= 0) {
+        pipValueInput.classList.add('input-error');
+        hasError = true;
+      }
+      if (hasError) {
+        positionResult.textContent = 'Enter valid values';
+        summaryBox.style.display = 'none';
+        return;
+      }
+
+      // Calculation: position size = (account balance * risk%) / (stop loss * pip value)
+      const riskAmount = balance * (risk / 100);
+      const positionSize = riskAmount / (stop * pipValue);
+
+      positionResult.textContent = `Position Size: ${positionSize.toFixed(2)} lots`;
+
+      summaryBox.innerHTML = `
+        <strong>Summary</strong><br>
+        Account Balance: <span>${balance}</span><br>
+        Risk per Trade: <span>${risk}%</span><br>
+        Stop Loss: <span>${stop} pips</span><br>
+        Pip Value: <span>${pipValue}</span><br>
+        Risk Amount: <span>${riskAmount.toFixed(2)}</span><br>
+        <strong>Position Size: <span>${positionSize.toFixed(2)} lots</span></strong>
+      `;
+      summaryBox.style.display = 'block';
+    };
+
+    resetBtn.onclick = () => {
+      balanceInput.value = '';
+      riskInput.value = '';
+      stopInput.value = '';
+      pipValueInput.value = '';
+      positionResult.textContent = '';
+      summaryBox.style.display = 'none';
+      clearErrors();
+    };
+  </script>
+</body>
+</html>
+</html>

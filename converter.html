@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Currency Converter</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <span class="nav-title">Forex Tools</span>
+    <a href="index.html" class="nav-btn nav-link">Home</a>
+    <a href="converter.html" class="nav-btn nav-link">Currency Converter</a>
+    <a href="profit.html" class="nav-btn nav-link">Profit Calculator</a>
+    <a href="position.html" class="nav-btn nav-link">Position Size Calculator</a>
+    <a href="pip.html" class="nav-btn nav-link">Pip Calculator</a>
+  </nav>
+  <div class="container">
+    <h1>Forex Calculator</h1>
+    <div class="converter-box">
+      <div class="calculator">
+        <div class="row">
+          <label for="amount">Amount:</label>
+          <input type="number" id="amount" placeholder="Enter amount" />
+        </div>
+        <div class="row">
+          <label for="from-currency">From:</label>
+          <select id="from-currency"></select>
+        </div>
+        <div class="row">
+          <label for="to-currency">To:</label>
+          <select id="to-currency"></select>
+        </div>
+        <button id="convert-btn">Convert</button>
+        <div id="result"></div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+</html>
